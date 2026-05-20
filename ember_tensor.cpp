@@ -1,11 +1,18 @@
 #include "ember.h"
 
+std::vector<std::shared_ptr<Value>> Tensor::convert_vector(const std::vector<float>& input) {
+    std::vector<std::shared_ptr<Value>> result;
+    for (int i = 0; i < shape.second; i++) {
+        result.push_back(std::make_shared<Value>(input[i]));
+    }
+    return result;
+}
 // sets the data and shape given a 1d vector
 void Tensor::set_vars(const std::vector<float>& input) {
     data.clear();
     shape.first = 1;
     shape.second = input.size();
-    data = input;
+    data = convert_vector(input);
 }
 // sets the data and shape given a 2d vector
 void Tensor::set_vars(const std::vector<std::vector<float>>& input) {
@@ -13,14 +20,18 @@ void Tensor::set_vars(const std::vector<std::vector<float>>& input) {
     shape.first = input.size();
     shape.second = input[0].size();
     for (int i = 0; i < input.size(); i++) {
-        data.insert(data.end(), input[i].begin(), input[i].end());
+        std::vector<std::shared_ptr<Value>> temp = convert_vector(input[i]);
+        data.insert(data.end(), temp.begin(), temp.end());
     }
 }
 // returns data in the form of a 2d vector
 std::vector<std::vector<float>> Tensor::print_data() {
     std::vector<std::vector<float>> result;
-    for (int i = 0; i < shape.first ; i++) {
-        std::vector<float> temp(data.begin() + (i*shape.second), data.begin() + (i*shape.second) + shape.second);
+    for (int i = 0; i < shape.first; i++) {
+        std::vector<float> temp;
+        for (int j = 0; j < shape.second; j++) {
+            temp.push_back(data[i * shape.second + j]->data);  
+        }
         result.push_back(temp);
     }
     return result;

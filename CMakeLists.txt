@@ -20,4 +20,4 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE nanobind_ROOT)
 find_package(nanobind CONFIG REQUIRED)
 
-nanobind_add_module(ember ember_tensor.cpp ember.cpp)
+nanobind_add_module(ember ember_value.cpp ember_tensor.cpp ember.cpp)
