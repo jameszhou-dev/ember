@@ -58,7 +58,9 @@ std::shared_ptr<Value> Value::pow(float data) { // power with float
 std::shared_ptr<Value> Value::operator/(std::shared_ptr<Value> other) { // division with another node
     return operator*(other->pow(-1));
 }
-
+std::shared_ptr<Value> Value::operator/(float other) {
+    return operator*(std::make_shared<Value>(other)->pow(-1));
+}
 std::shared_ptr<Value> Value::operator-(std::shared_ptr<Value> other) { // subtraction with another node
     return operator+(other->operator*(-1));
 }

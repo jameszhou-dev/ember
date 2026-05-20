@@ -44,6 +44,7 @@ public:
     std::shared_ptr<Value> operator*(float data);
     std::shared_ptr<Value> pow(float data);
     std::shared_ptr<Value> operator/(std::shared_ptr<Value> other);
+    std::shared_ptr<Value> operator/(float other);
     std::shared_ptr<Value> operator-(std::shared_ptr<Value> other);
     std::shared_ptr<Value> operator-(float data);
     std::shared_ptr<Value> tanh();

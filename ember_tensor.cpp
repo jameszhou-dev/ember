@@ -51,6 +51,46 @@ void init_tensor(nb::module_& m) {
         .def(nb::init<const std::vector<float> &>())
         .def(nb::init<const std::vector<std::vector<float>> &>())
         .def_rw("shape", &Tensor::shape)
+        .def("__pow__", [](Tensor &tensor, float exp) {
+            Tensor result;
+            result.shape = tensor.shape;
+            for (int i = 0; i < tensor.data.size(); i++) {
+                result.data.push_back(tensor.data[i]->pow(exp));
+            }
+            return result;
+        })
+        .def("__add__", [](Tensor &tensor, float num) {
+            Tensor result;
+            result.shape = tensor.shape;
+            for (int i = 0; i < tensor.data.size(); i++) {
+                result.data.push_back(tensor.data[i]->operator+(num));
+            }
+            return result;
+        })
+        .def("__sub__", [](Tensor &tensor, float num) {
+            Tensor result;
+            result.shape = tensor.shape;
+            for (int i = 0; i < tensor.data.size(); i++) {
+                result.data.push_back(tensor.data[i]->operator-(num));
+            }
+            return result;
+        })
+        .def("__mul__", [](Tensor &tensor, float num) {
+            Tensor result;
+            result.shape = tensor.shape;
+            for (int i = 0; i < tensor.data.size(); i++) {
+                result.data.push_back(tensor.data[i]->operator*(num));
+            }
+            return result;
+        })
+        .def("__truediv__", [](Tensor &tensor, float num) {
+            Tensor result;
+            result.shape = tensor.shape;
+            for (int i = 0; i < tensor.data.size(); i++) {
+                result.data.push_back(tensor.data[i]->operator/(num));
+            }
+            return result;
+        })
         .def_prop_rw("data", 
                     [] (Tensor& tensor)  {
                         return tensor.print_data();
