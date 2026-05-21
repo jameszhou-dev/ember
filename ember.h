@@ -37,7 +37,6 @@ public:
     static std::shared_ptr<Value> make(float data, std::string label = "") {
         return std::make_shared<Value>(data, label);
     }
-
     std::shared_ptr<Value> operator+(std::shared_ptr<Value> other);
     std::shared_ptr<Value> operator+(float data);
     std::shared_ptr<Value> operator*(std::shared_ptr<Value> other);
@@ -50,7 +49,6 @@ public:
     std::shared_ptr<Value> tanh();
     std::shared_ptr<Value> node_exp();
     void backward();
-
     friend std::ostream& operator<<(std::ostream& os, const Value& value);
 };
 
@@ -62,7 +60,8 @@ struct Tensor{
     void set_vars(const std::vector<float>& input);
     void set_vars(const std::vector<std::vector<float>>& input);
     std::vector<std::vector<float>> print_data();
-
+    void backward();
+    
     Tensor();
     Tensor(const std::vector<float>& input);
     Tensor(const std::vector<std::vector<float>>& input);

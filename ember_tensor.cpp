@@ -37,6 +37,18 @@ std::vector<std::vector<float>> Tensor::print_data() {
     return result;
 }
 
+void Tensor::backward() {
+    if (data.empty()) {
+        return;
+    }
+    data[0]->backward();
+}
+
+
+
+
+
+
 Tensor::Tensor() {}
 Tensor::Tensor(const std::vector<float>& input) {
     set_vars(input);
@@ -51,6 +63,9 @@ void init_tensor(nb::module_& m) {
         .def(nb::init<const std::vector<float> &>())
         .def(nb::init<const std::vector<std::vector<float>> &>())
         .def_rw("shape", &Tensor::shape)
+        .def("backward", [](Tensor &tensor) {
+            tensor.backward();
+        })
         .def("__pow__", [](Tensor &tensor, float exp) {
             Tensor result;
             result.shape = tensor.shape;
@@ -92,16 +107,48 @@ void init_tensor(nb::module_& m) {
             return result;
         })
         .def_prop_rw("data", 
-                    [] (Tensor& tensor)  {
-                        return tensor.print_data();
-                    },
-                    [] (Tensor& tensor, nb::object input) {
-                        try {
-                            auto vec2d = nb::cast<std::vector<std::vector<float>>>(input);
-                            tensor.set_vars(vec2d);
-                        } catch (const nb::cast_error&) {
-                            auto vec1d = nb::cast<std::vector<float>>(input);
-                            tensor.set_vars(vec1d);
-                        }
-                    });
+            [] (Tensor& tensor)  {
+                return tensor.print_data();
+            },
+            [] (Tensor& tensor, nb::object input) {
+                try {
+                    auto vec2d = nb::cast<std::vector<std::vector<float>>>(input);
+                    tensor.set_vars(vec2d);
+                } catch (const nb::cast_error&) {
+                    auto vec1d = nb::cast<std::vector<float>>(input);
+                    tensor.set_vars(vec1d);
+                }
+        })
+        .def("zero_grad", [](Tensor& tensor) {
+            if (tensor.data.empty()) return;
+            
+            std::vector<std::shared_ptr<Value>> topo;
+            std::set<Value*> visited;
+            
+            std::function<void(std::shared_ptr<Value>)> build_topo = [&](std::shared_ptr<Value> node) {
+                if (!visited.count(node.get())) {
+                    visited.insert(node.get());
+                    for (auto& child : node->prev)
+                        build_topo(child);
+                    topo.push_back(node);
+                }
+            };
+            
+            for (auto& v : tensor.data)
+                build_topo(v);
+            
+            for (auto& node : topo)
+                node->grad = 0.0f;
+        })
+        .def_prop_ro("grad", [](Tensor& tensor) {
+            std::vector<std::vector<float>> result;
+            for (int i = 0; i < tensor.shape.first; i++) {
+                std::vector<float> temp;
+                for (int j = 0; j < tensor.shape.second; j++) {
+                    temp.push_back(tensor.data[i * tensor.shape.second + j]->grad);
+                }
+                result.push_back(temp);
+            }
+            return result;
+        });
 }
