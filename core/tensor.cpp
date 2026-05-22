@@ -1,4 +1,4 @@
-#include "ember.h"
+#include "../ember.h"
 
 std::vector<std::shared_ptr<Value>> Tensor::convert_vector(const std::vector<float>& input) {
     std::vector<std::shared_ptr<Value>> result;
@@ -37,13 +37,6 @@ std::vector<std::vector<float>> Tensor::print_data() {
     return result;
 }
 
-void Tensor::backward() {
-    if (data.empty()) {
-        return;
-    }
-    data[0]->backward();
-}
-
 
 
 
@@ -63,9 +56,6 @@ void init_tensor(nb::module_& m) {
         .def(nb::init<const std::vector<float> &>())
         .def(nb::init<const std::vector<std::vector<float>> &>())
         .def_rw("shape", &Tensor::shape)
-        .def("backward", [](Tensor &tensor) {
-            tensor.backward();
-        })
         .def("__pow__", [](Tensor &tensor, float exp) {
             Tensor result;
             result.shape = tensor.shape;
@@ -118,7 +108,10 @@ void init_tensor(nb::module_& m) {
                     auto vec1d = nb::cast<std::vector<float>>(input);
                     tensor.set_vars(vec1d);
                 }
-        })
+        });
+}
+
+/*
         .def("zero_grad", [](Tensor& tensor) {
             if (tensor.data.empty()) return;
             
@@ -151,4 +144,4 @@ void init_tensor(nb::module_& m) {
             }
             return result;
         });
-}
+        */

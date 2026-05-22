@@ -52,7 +52,20 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Value& value);
 };
 
-struct Tensor{
+class Neuron {
+public:
+    int num_inputs;
+    std::vector<std::shared_ptr<Value>> weights;
+    std::shared_ptr<Value> bias;
+
+    Neuron(int num_inputs);
+    std::vector<std::shared_ptr<Value>> parameters();
+    std::shared_ptr<Value> forward(std::vector<std::shared_ptr<Value>> inputs);
+    std::shared_ptr<Value> forward(std::vector<float> inputs);
+};
+
+class Tensor {
+public:
     std::vector<std::shared_ptr<Value>> data;
     std::pair<size_t, size_t> shape;
 
@@ -67,7 +80,35 @@ struct Tensor{
     Tensor(const std::vector<std::vector<float>>& input);
 };
 
+class Module {
+public:
+    int num_inputs;
+    int num_outputs;
+    std::vector<Neuron> neurons;
+
+    Module();
+    Module(int num_inputs, int num_outputs);
+    std::vector<std::shared_ptr<Value>> paramaters();
+    std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs);
+    std::vector<std::shared_ptr<Value>> forward(std::vector<float> inputs);
+};
+
+class LinearLayer : public Module {
+public:
+    LinearLayer(int num_inputs, int num_outputs);
+};
+
+class Sequential{
+public:
+    std::vector<Module> modules;
+};
+
+
 void init_tensor(nb::module_& m);
+void init_sequential(nb::module_& m);
+void init_module(nb::module_& m);
+void init_linear_layer(nb::module_& m);
+
 
 
 #endif

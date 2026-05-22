@@ -1,4 +1,4 @@
-#include "ember.h"
+#include "../ember.h"
 
 Value::Value() {
     this->data = 0.0;
