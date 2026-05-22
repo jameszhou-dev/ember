@@ -21,9 +21,9 @@ execute_process(
 find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(ember ember.cpp 
-                          core/neuron.cpp
                           core/tensor.cpp
                           core/value.cpp
+                          nn/neuron.cpp
                           nn/linear_layer.cpp
                           nn/module.cpp
                           nn/sequential.cpp)

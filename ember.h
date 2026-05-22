@@ -86,21 +86,29 @@ public:
     int num_outputs;
     std::vector<Neuron> neurons;
 
-    Module();
-    Module(int num_inputs, int num_outputs);
-    std::vector<std::shared_ptr<Value>> paramaters();
-    std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs);
-    std::vector<std::shared_ptr<Value>> forward(std::vector<float> inputs);
+    Module() {}
+    Module(int num_inputs, int num_outputs) {}
+
+    virtual ~Module();
+
+    virtual std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs) { return {};};
+    virtual std::vector<std::shared_ptr<Value>> parameters() { return {};};
 };
 
 class LinearLayer : public Module {
 public:
     LinearLayer(int num_inputs, int num_outputs);
+
+    std::vector<std::shared_ptr<Value>> parameters() override;
+    std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs) override;
+    std::vector<std::shared_ptr<Value>> forward(std::vector<float> inputs);
 };
 
-class Sequential{
+class Sequential {
 public:
     std::vector<Module> modules;
+
+    Sequential(std::vector<Module> modules);
 };
 
 
