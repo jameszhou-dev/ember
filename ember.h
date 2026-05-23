@@ -93,6 +93,7 @@ public:
 
     virtual std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs) { return {};};
     virtual std::vector<std::shared_ptr<Value>> parameters() { return {};};
+    virtual void zero_grad() {};
 };
 
 class LinearLayer : public Module {
@@ -102,15 +103,25 @@ public:
     std::vector<std::shared_ptr<Value>> parameters() override;
     std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs) override;
     std::vector<std::shared_ptr<Value>> forward(std::vector<float> inputs);
+    void zero_grad() override;
 };
 
 class Sequential {
 public:
-    std::vector<Module> modules;
+    std::vector<nb::object> py_modules;
+    std::vector<Module*> modules;
 
-    Sequential(std::vector<Module> modules);
+    Sequential(std::vector<nb::object> py_modules) : py_modules(py_modules) {
+        for (auto& obj : this->py_modules)
+            modules.push_back(nb::cast<Module*>(obj));
+    }
+    Sequential(const Sequential&) = delete;
+    Sequential& operator=(const Sequential&) = delete;
+
+    std::vector<std::shared_ptr<Value>> forward(std::vector<std::shared_ptr<Value>> inputs);
+    std::vector<std::shared_ptr<Value>> parameters();
+    void zero_grad();
 };
-
 
 void init_tensor(nb::module_& m);
 void init_sequential(nb::module_& m);

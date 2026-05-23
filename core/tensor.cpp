@@ -37,11 +37,6 @@ std::vector<std::vector<float>> Tensor::print_data() {
     return result;
 }
 
-
-
-
-
-
 Tensor::Tensor() {}
 Tensor::Tensor(const std::vector<float>& input) {
     set_vars(input);

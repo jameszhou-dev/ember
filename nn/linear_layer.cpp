@@ -34,6 +34,13 @@ std::vector<std::shared_ptr<Value>> LinearLayer::forward(std::vector<float> inpu
     return output;
 }
 
+void LinearLayer::zero_grad() {
+    std::vector<std::shared_ptr<Value>> params = this->parameters();
+    for (int i = 0; i < params.size(); i++) {
+        params[i]->grad = 0;
+    }
+}
+
 
 
 
